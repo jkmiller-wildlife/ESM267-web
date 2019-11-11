@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        #map {
+            width: 1036px;
+            height: 866px;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet-svg-shape-markers.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/FailedNests_1.js"></script>
+        <script src="data/HatchedNests_2.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[34.67808178139664,-120.62114607898077],[34.70987223138893,-120.58310056359649]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        var layer_USGSTopographicMapsCaltopo_0 = L.tileLayer('http://caltopo.s3.amazonaws.com/topo/{z}/{x}/{y}.png', {
+            opacity: 1.0,
+            attribution: '<a href="https://caltopo.com">© Caltopo</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 16
+        });
+        layer_USGSTopographicMapsCaltopo_0;
+        map.addLayer(layer_USGSTopographicMapsCaltopo_0);
+        function pop_FailedNests_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['N_UTM84'] !== null ? Autolinker.link(String(feature.properties['N_UTM84'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['E_UTM84'] !== null ? Autolinker.link(String(feature.properties['E_UTM84'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Year'] !== null ? Autolinker.link(String(feature.properties['Year'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nest_ID'] !== null ? Autolinker.link(String(feature.properties['Nest_ID'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Transect_Block'] !== null ? Autolinker.link(String(feature.properties['Transect_Block'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Restoration_Area'] !== null ? Autolinker.link(String(feature.properties['Restoration_Area'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DFO'] !== null ? Autolinker.link(String(feature.properties['DFO'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['EWF'] !== null ? Autolinker.link(String(feature.properties['EWF'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Est_Initiation_Date'] !== null ? Autolinker.link(String(feature.properties['Est_Initiation_Date'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Clutch_Completion_Date'] !== null ? Autolinker.link(String(feature.properties['Clutch_Completion_Date'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fate_Date'] !== null ? Autolinker.link(String(feature.properties['Fate_Date'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fate_Cat'] !== null ? Autolinker.link(String(feature.properties['Fate_Cat'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fate'] !== null ? Autolinker.link(String(feature.properties['Fate'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Confirmed_Clutch_Size'] !== null ? Autolinker.link(String(feature.properties['Confirmed_Clutch_Size'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Number_Chicks_Hatched'] !== null ? Autolinker.link(String(feature.properties['Number_Chicks_Hatched'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Number_Confirmed_Fledge'] !== null ? Autolinker.link(String(feature.properties['Number_Confirmed_Fledge'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['General_Nest_Notes'] !== null ? Autolinker.link(String(feature.properties['General_Nest_Notes'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Proofed_By'] !== null ? Autolinker.link(String(feature.properties['Proofed_By'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_FailedNests_1_0(feature) {
+            switch(String(feature.properties['Year'])) {
+                case '2011':
+                    return {
+                pane: 'pane_FailedNests_1',
+                radius: 6.000000000000002,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,245,240,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2012':
+                    return {
+                pane: 'pane_FailedNests_1',
+                radius: 6.000000000000002,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(254,221,205,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2013':
+                    return {
+                pane: 'pane_FailedNests_1',
+                radius: 6.000000000000002,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,179,152,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2014':
+                    return {
+                pane: 'pane_FailedNests_1',
+                radius: 6.000000000000002,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,134,102,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2015':
+                    return {
+                pane: 'pane_FailedNests_1',
+                radius: 6.000000000000002,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(247,87,62,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2016':
+                    return {
+                pane: 'pane_FailedNests_1',
+                radius: 6.000000000000002,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(222,41,36,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2017':
+                    return {
+                pane: 'pane_FailedNests_1',
+                radius: 6.000000000000002,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(179,18,23,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2018':
+                    return {
+                pane: 'pane_FailedNests_1',
+                radius: 6.000000000000002,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(103,0,13,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_FailedNests_1');
+        map.getPane('pane_FailedNests_1').style.zIndex = 401;
+        map.getPane('pane_FailedNests_1').style['mix-blend-mode'] = 'normal';
+        var layer_FailedNests_1 = new L.geoJson(json_FailedNests_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_FailedNests_1',
+            layerName: 'layer_FailedNests_1',
+            pane: 'pane_FailedNests_1',
+            onEachFeature: pop_FailedNests_1,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_FailedNests_1_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_FailedNests_1);
+        map.addLayer(layer_FailedNests_1);
+        function pop_HatchedNests_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['N_UTM84'] !== null ? Autolinker.link(String(feature.properties['N_UTM84'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['E_UTM84'] !== null ? Autolinker.link(String(feature.properties['E_UTM84'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Year'] !== null ? Autolinker.link(String(feature.properties['Year'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nest_ID'] !== null ? Autolinker.link(String(feature.properties['Nest_ID'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Transect_Block'] !== null ? Autolinker.link(String(feature.properties['Transect_Block'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Restoration_Area'] !== null ? Autolinker.link(String(feature.properties['Restoration_Area'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DFO'] !== null ? Autolinker.link(String(feature.properties['DFO'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['EWF'] !== null ? Autolinker.link(String(feature.properties['EWF'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Est_Initiation_Date'] !== null ? Autolinker.link(String(feature.properties['Est_Initiation_Date'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Clutch_Completion_Date'] !== null ? Autolinker.link(String(feature.properties['Clutch_Completion_Date'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fate_Date'] !== null ? Autolinker.link(String(feature.properties['Fate_Date'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fate_Cat'] !== null ? Autolinker.link(String(feature.properties['Fate_Cat'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Fate'] !== null ? Autolinker.link(String(feature.properties['Fate'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Confirmed_Clutch_Size'] !== null ? Autolinker.link(String(feature.properties['Confirmed_Clutch_Size'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Number_Chicks_Hatched'] !== null ? Autolinker.link(String(feature.properties['Number_Chicks_Hatched'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Number_Confirmed_Fledge'] !== null ? Autolinker.link(String(feature.properties['Number_Confirmed_Fledge'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['General_Nest_Notes'] !== null ? Autolinker.link(String(feature.properties['General_Nest_Notes'])) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Proofed_By'] !== null ? Autolinker.link(String(feature.properties['Proofed_By'])) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_HatchedNests_2_0(feature) {
+            switch(String(feature.properties['Year'])) {
+                case '2011':
+                    return {
+                pane: 'pane_HatchedNests_2',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(247,252,245,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2012':
+                    return {
+                pane: 'pane_HatchedNests_2',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(226,244,221,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2013':
+                    return {
+                pane: 'pane_HatchedNests_2',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(192,230,185,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2014':
+                    return {
+                pane: 'pane_HatchedNests_2',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(148,211,144,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2015':
+                    return {
+                pane: 'pane_HatchedNests_2',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(96,186,108,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2016':
+                    return {
+                pane: 'pane_HatchedNests_2',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(50,155,81,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2017':
+                    return {
+                pane: 'pane_HatchedNests_2',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(12,120,53,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '2018':
+                    return {
+                pane: 'pane_HatchedNests_2',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,68,27,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_HatchedNests_2');
+        map.getPane('pane_HatchedNests_2').style.zIndex = 402;
+        map.getPane('pane_HatchedNests_2').style['mix-blend-mode'] = 'normal';
+        var layer_HatchedNests_2 = new L.geoJson(json_HatchedNests_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_HatchedNests_2',
+            layerName: 'layer_HatchedNests_2',
+            pane: 'pane_HatchedNests_2',
+            onEachFeature: pop_HatchedNests_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.shapeMarker(latlng, style_HatchedNests_2_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_HatchedNests_2);
+        map.addLayer(layer_HatchedNests_2);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'Hatched Nests<br /><table><tr><td style="text-align: center;"><img src="legend/HatchedNests_2_20110.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/HatchedNests_2_20121.png" /></td><td>2012</td></tr><tr><td style="text-align: center;"><img src="legend/HatchedNests_2_20132.png" /></td><td>2013</td></tr><tr><td style="text-align: center;"><img src="legend/HatchedNests_2_20143.png" /></td><td>2014</td></tr><tr><td style="text-align: center;"><img src="legend/HatchedNests_2_20154.png" /></td><td>2015</td></tr><tr><td style="text-align: center;"><img src="legend/HatchedNests_2_20165.png" /></td><td>2016</td></tr><tr><td style="text-align: center;"><img src="legend/HatchedNests_2_20176.png" /></td><td>2017</td></tr><tr><td style="text-align: center;"><img src="legend/HatchedNests_2_20187.png" /></td><td>2018</td></tr></table>': layer_HatchedNests_2,'Failed Nests<br /><table><tr><td style="text-align: center;"><img src="legend/FailedNests_1_20110.png" /></td><td>2011</td></tr><tr><td style="text-align: center;"><img src="legend/FailedNests_1_20121.png" /></td><td>2012</td></tr><tr><td style="text-align: center;"><img src="legend/FailedNests_1_20132.png" /></td><td>2013</td></tr><tr><td style="text-align: center;"><img src="legend/FailedNests_1_20143.png" /></td><td>2014</td></tr><tr><td style="text-align: center;"><img src="legend/FailedNests_1_20154.png" /></td><td>2015</td></tr><tr><td style="text-align: center;"><img src="legend/FailedNests_1_20165.png" /></td><td>2016</td></tr><tr><td style="text-align: center;"><img src="legend/FailedNests_1_20176.png" /></td><td>2017</td></tr><tr><td style="text-align: center;"><img src="legend/FailedNests_1_20187.png" /></td><td>2018</td></tr></table>': layer_FailedNests_1,"USGS Topographic Maps (Caltopo)": layer_USGSTopographicMapsCaltopo_0,},{collapsed:false}).addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
